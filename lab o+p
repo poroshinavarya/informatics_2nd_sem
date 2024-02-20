@@ -1,0 +1,47 @@
+#include <iostream>
+#include <math.h>
+using namespace std;
+struct A{
+    int n;
+    int lg;
+    double S;
+    int P;
+    float x, y;
+
+}num;
+double S(int n, int lg, double S){
+    if (n==3){
+        S = (double) pow((int) lg, 2)*sqrt(3)/4;
+    }
+    if (n==4){
+        S = (double)pow((int) lg, 2);
+    }
+    if (n>4){
+        S = (n*((double)pow((int) lg, 2)))/4*tan(3.14/n);
+    }
+    return S;
+
+}
+int P(int P, int lg, int n){
+    P=lg*n;
+    return P;
+}
+double coordinates(float x, float y, int lg, int n, float X[], float Y[]){
+    float R = lg/(2*sin(3.14/n));
+
+    for(int i=0; i<n-1; i++){
+        X[i]= x+R*cos(6.28*i/n);
+        Y[i]= y+R*sin(6.28*i/n);
+    }
+
+}
+void input(A *num, int n){
+    cout << enter << endl;
+}
+int main()
+{
+    int x, y;
+    int n;
+    A num[n];
+    return 0;
+}
