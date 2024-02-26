@@ -1,47 +1,271 @@
 #include <iostream>
 #include <math.h>
+
 using namespace std;
-struct A{
+# define pi M_PI
+
+//# define pi     3.141592653589  /* pi */
+
+struct figure{
     int n;
     int lg;
     double S;
     int P;
     float x, y;
 
-}num;
-double S(int n, int lg, double S){
-    if (n==3){
-        S = (double) pow((int) lg, 2)*sqrt(3)/4;
-    }
-    if (n==4){
-        S = (double)pow((int) lg, 2);
-    }
-    if (n>4){
-        S = (n*((double)pow((int) lg, 2)))/4*tan(3.14/n);
-    }
-    return S;
+};
+struct center{
+    int x0;
+    int y0;
+};
 
-}
-int P(int P, int lg, int n){
-    P=lg*n;
-    return P;
-}
-double coordinates(float x, float y, int lg, int n, float X[], float Y[]){
-    float R = lg/(2*sin(3.14/n));
+double Square(figure *num, int i);
+int Perimetr(figure *num, int i);
+double coordinates(figure *num, int i);
 
-    for(int i=0; i<n-1; i++){
-        X[i]= x+R*cos(6.28*i/n);
-        Y[i]= y+R*sin(6.28*i/n);
-    }
 
-}
-void input(A *num, int n){
-    cout << enter << endl;
-}
+void input(figure *num, int i);
+void newFigure(figure *number, int count);
+void deleteStruct(figure *num, int &count);
+double distance(figure p1, figure p2);
+void maxSquare(figure *num, int count);
+void maxPerimetr(figure *num, int count);
+void information(figure *num, int count);
+
+void menu(figure *num, int count);
+
+
 int main()
 {
-    int x, y;
-    int n;
-    A num[n];
+    //figure name;
+    int count;
+    //int *pCount;
+    //pCount = &count;
+    cout << "Enter count of figure: ";
+    cin >> count;
+    figure *number;
+    //cout << number;
+    number = new figure[count];
+    //cout << number << &number;
+    for (int iStruct = 0; iStruct < count; ++iStruct){
+        input(&number[iStruct], iStruct);
+
+        number[iStruct].P = Perimetr(&number[iStruct], iStruct);
+        number[iStruct].S = Square(&number[iStruct], iStruct);
+        cout << "Perimetr " << iStruct+1 << " figure: " << number[iStruct].P << endl;
+        cout << "Square " << iStruct+1 << " figure: " << number[iStruct].S << endl;
+        //coordinates(&number[iStruct], iStruct);
+
+    }
+
+    menu(number, count);
+
+    //maxSquare(number, count);
+    //cout << endl;
+    //maxPerimetr(number, count);
+    //cout << endl;
+    delete[] number;
     return 0;
 }
+
+
+double Square(figure *num, int i){
+   // int S;
+    if (num[i].n==3){
+        return ((double) pow((int) num[i].lg, 2)*sqrt(3)/4);
+    }
+    if (num[i].n==4){
+        return ((double)pow((int) num[i].lg, 2));
+    }
+    if (num[i].n>4){
+        return ((num[i].n*((double)pow((int) num[i].lg, 2)))/4*tan(pi/num[i].n));
+    }
+
+};
+
+
+int Perimetr(figure *num, int i){
+    //int P=lg*n;
+    return (num[i].lg*num[i].n);
+};
+
+
+double coordinates(figure *num, int i){
+    center Point = {0, 0};
+    float AO = sqrt(pow((Point.x0 - num[i].x), 2) + pow((Point.y0 - num[i].y), 2));
+    cout << "AO = " << AO << endl;
+
+    float R = num[i].lg/(2*sin(pi/num[i].n));
+    cout << "R = " << R << endl;
+
+    float g = R/AO;
+
+    float *X = new float[num[i].n];
+    float *Y = new float[num[i].n];
+
+    float pi2 = 2*pi;
+
+    // Найдем угол для самой удаленной точки от центра
+    // float maxAngle = atan2(num[i].y, num[i].x);
+    float angleIncrement = 360.0 / num[i].n; // Угол между вершинами в градусах
+    for(int k=0; k<num[i].n-1; k++){
+        X[k]= num[i].x+R*cos(angleIncrement-pi2*k/num[i].n);
+        Y[k]= num[i].y+R*sin(angleIncrement-pi2*k/num[i].n);
+    }
+    for(int k=0; k<num[i].n-1; k++){
+        //cout << "k = " << k << endl;
+        // cout << "n = " << num[i].n << endl;
+        cout << "Point " << k+2 << ": \"" << X[k] << "\", \"" << Y[k] << "\"" << endl;
+    }
+    delete[] X;
+    delete[] Y;
+};
+
+
+void input(figure *num, int i){
+    cout << "enter count of points ";
+    cin >> num[i].n;
+    cout << "enter length ";
+    cin >> num[i].lg;
+    cout << "enter coordinates ";
+    cin >> num[i].x >> num[i].y;
+};
+
+
+void newFigure(figure *number, int count){
+    number = new figure[count+1];
+    input(&number[count+1], count+1);
+    for (int iStruct = 0; iStruct < count+1; ++iStruct){
+
+        if(iStruct == count){
+            number[iStruct].P = Perimetr(&number[iStruct], iStruct);
+            number[iStruct].S = Square(&number[iStruct], iStruct);
+            cout << "Perimetr " << iStruct+1 << " figure: " << number[iStruct].P << endl;
+            cout << "Square " << iStruct+1 << " figure: " << number[iStruct].S << endl;
+        }
+
+
+        //coordinates(&number[iStruct], iStruct);
+
+    }
+    delete[] number;
+};
+
+
+void deleteStruct(figure *num, int &count){ ///не работает
+    int key;
+    cout << "enter number of figure to delete: ";
+    cin >> key;
+    int newCount = 0;
+    figure *Newnum = new figure[count];
+    for(int iStruct = 0; iStruct < count; iStruct++){
+        if (iStruct != key){
+           Newnum[newCount] = num[iStruct];
+           newCount++;
+        }
+    }
+    delete[] num;
+    num = Newnum;
+    count = newCount;
+    information(Newnum, count);
+};
+
+
+double distance(figure p1, figure p2) {
+    return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
+};
+
+
+void maxSquare(figure *num, int count){
+    //double *nS = new double[count];
+    double maxVal = 0;
+    for(int h = 0; h < count; h++){
+       // num[h].S = Square(&num[count], h);
+        //cout << "Square " << h+1 << " is " << num[h].S << endl;
+        if(num[h].S > maxVal){
+            maxVal = num[h].S;
+        }
+    }
+    //num[i].S
+    for(int h = 0; h < count; h++){
+        if(num[h].S==maxVal){
+             cout << "max Square " << h+1 << " is " << num[h].S << endl;
+        }
+    }
+    //delete[] nS;
+};
+
+
+void maxPerimetr(figure *num, int count){
+   // double *nP = new double[count];
+    double maxVal = 0;
+
+    for(int h = 0; h < count; h++){
+        //nP[h] = Perimetr(&num[i], h);
+       // cout << "Perimetr " << h+1 << " is " << num[h].P << endl;
+        if(num[h].P > maxVal){
+            maxVal = num[h].P;
+        }
+    }
+    //num[i].P
+    for(int h = 0; h < count; h++){
+        if(num[h].P == maxVal){
+             cout << "max Perimetr " << h+1 << " is " << num[h].P << endl;
+        }
+    }
+    //delete[] nP;
+};
+
+
+void information(figure *num, int count){
+    for(int i = 0; i < count; i++){
+    cout << "figure " << i << " count of points " << num[i].n << " coordinates of points " << coordinates(num, i);
+    cout << endl << "Square " << Square(num, i) << " Perimetr " << Perimetr(num, i) << endl;
+    }
+};
+
+
+void menu(figure *number, int count){
+    int choice;
+    cout << "choice action: ";
+    cout << "1 - new figure" << endl;
+    cout << "2 - information of the figure" << endl;
+    cout << "3 - delete the figure" << endl;
+    cout << "4 - max Square and Perimetr" << endl;
+    cout << "5 - exit from programm" << endl;
+    cin >> choice;
+
+    switch(choice){
+    case 1:
+        newFigure(number, count);
+        break;
+    case 2:
+        information(number, count);
+        break;
+    case 3:
+        deleteStruct(number, count);
+        break;
+    case 4:
+        int choice2;
+        cout << "choice action: ";
+        cout << "1 - max Square" << endl;
+        cout << "2 - max Perimetr" << endl;
+        cout << " - exit from submenu" << endl;
+        cin >> choice2;
+        switch(choice2){
+        case 1:
+            maxSquare(number, count);
+            break;
+        case 2:
+            maxPerimetr(number, count);
+            break;
+        default:
+            cout << "Main menu:" << endl;
+            break;
+        }
+        break;
+    default:
+        cout << "exit from programm" << endl;
+        break;
+    }
+};
