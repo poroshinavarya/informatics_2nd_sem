@@ -1,5 +1,6 @@
 #include <iostream>
 #include <math.h>
+#include <cstdlib>
 //#include <limits>
 using namespace std;
 # define pi M_PI
@@ -8,15 +9,18 @@ using namespace std;
 
 struct figure{
     int n;
-    int lg;
+    double lg;
     double S;
     int P;
     double x, y;
 };
-
+struct center{
+    int x0;
+    int y0;
+};
 double Square(figure *num, int i);
 int Perimetr(figure *num, int i);
-void coordinates(figure *num, int i);
+void coordinates(figure *num);
 void input(figure *num, int i);
 void newFigure(figure *number, int count);
 void deleteStruct(figure **num, int &count);
@@ -46,7 +50,7 @@ int main()
         number[iStruct].S = Square(&number[iStruct], iStruct);
         cout << "Perimetr " << iStruct+1 << " figure: " << number[iStruct].P << endl;
         cout << "Square " << iStruct+1 << " figure: " << number[iStruct].S << endl;
-        coordinates(&number[iStruct], iStruct);
+        coordinates(&number[iStruct]);
     }
     menu(number, count);
     delete[] number;
@@ -75,7 +79,7 @@ int Perimetr(figure *num, int i){
 }
 
 
-void coordinates(figure *num, int i){
+/*void coordinates(figure *num, int i){
     double R = num[i].lg/(2*sin(pi/num[i].n));
     //cout << "R = " << R << endl;
     double *X = new double[num[i].n];
@@ -100,34 +104,58 @@ void coordinates(figure *num, int i){
     delete[] X;
     delete[] Y;
     cout << "coordinates done" << endl;
-}
-/*void coordinates(figure *num, int i)
+}*/
+void coordinates(figure *num)
 {
+    center Point = {0, 0};
+    float AO = sqrt(pow((Point.x0 - num->x), 2) + pow((Point.y0 - num->y), 2));
+    cout << "AO = " << AO << endl;
+
+    float R = num->lg/(2*sin(pi/num->n));
+    cout << "R = " << R << endl;
+    if(AO > R){
   float a=0;//angle
   float a_temp=0;
-  a=((num[i].n-2)*M_PI)/num[i].n;
-  cout << "count " << num[i].n<<endl;
+  a=((num->n-2)*M_PI)/num->n;
+  cout << "count " << num->n << endl;
   //cout<<"\n"<<a<<"\n";
-  num[i].x=num[i].x-(num[i].lg);
+  //num->x=num->x-(num->lg);
   //num[i].y=num[i].y;
   //cout<<"\n"<<num[i].x<<"\t"<<num[i].y;
-  //double *X = new double[num[i].n];
-    //double *Y = new double[num[i].n];
-  for(int j=2; j<num[i].n; j++)
+    //double *X = new double[num.n];
+    //double *Y = new double[num.n];
+   if(num[0].x > 0){
+  num[1].x=num[0].x-(num->lg);
+  num[1].y=num[0].y;
+  for(int j=2; j<num->n; j++)
     {
-      num[i][j].x=num[i][j-1].x-cos(M_PI-a+a_temp);
-      num[i].y=num[i-1].y-(pow(-1,j))*(num[i].lg)*sin(M_PI-a+a_temp);
+      num[j].x = num[j-1].x-cos(M_PI-a+a_temp);
+      num[j].y = num[j-1].y-(pow(-1,j))*(num->lg)*sin(M_PI-a+a_temp);
       a_temp=(M_PI-a)+a_temp;
       //cout<<"\n"<<num[j].x<<"\t"<<num[j].y;
     }
-    for (int j=0; j<num[i].n; j++)
+  }
+    else{
+    num[1].x = num[0].x+(num->lg);
+    num[1].y = num[0].y;
+    cout<<"\n"<<num[1].x<<"\t"<<num[1].y;
+  for(int j=2; j<num->n; j=j+1)
     {
-      cout<< "point "<< j<< ": " << num[i][j].x<<" "<<num[i][j].y<<"\n";
+      num[j].x=num[j-1].x+cos(M_PI-a+a_temp);
+      num[j].y=num[j-1].y-(pow(-1,j))*(num->lg)*sin(M_PI-a+a_temp);
+      a_temp=(M_PI-a)+a_temp;
+  }
+  }
+    for (int j=0; j<num->n; j++)
+    {
+      cout<< "point "<< j << ": " << num[j].x<<" "<<num[j].y<<"\n";
     }
     //delete[] X;
     //delete[] Y;
+    }while(AO > R);
+    cout << "AO < R error!!!!" << endl;
     cout << "coordinates done" << endl;
-}*/
+}
 
 
 void input(figure *num, int i){
@@ -184,7 +212,7 @@ void newFigure(figure *number, int count) {
             temp[iStruct].S = Square(&temp[iStruct], iStruct);
             cout << "Perimetr " << iStruct+1 << " figure: " << temp[iStruct].P << endl;
             cout << "Square " << iStruct+1 << " figure: " << temp[iStruct].S << endl;
-            coordinates(&temp[iStruct], iStruct);
+            coordinates(&temp[iStruct]);
         }
     }
     delete[] number;
@@ -246,7 +274,7 @@ void information(figure *num, int count){
     for(int i = 0; i < count; i++){
     cout << "figure: " << i << " count of points: " << num[i].n << endl;
     cout << " coordinates of points: " << endl;
-    coordinates(num, i);
+    coordinates(&num[i]);
     cout << endl << "Square " << Square(num, i) << " Perimetr " << Perimetr(num, i) << endl;
     cout << "DONE" << endl;
     }
@@ -311,3 +339,4 @@ void menu(figure *number, int count){
     }while(next=='y');
         cout << "bye bye" << endl;
 }
+
