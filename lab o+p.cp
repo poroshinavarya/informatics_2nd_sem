@@ -1,7 +1,6 @@
 #include <iostream>
 #include <math.h>
-#include <cstdlib>
-//#include <limits>
+
 using namespace std;
 # define pi M_PI
 
@@ -14,16 +13,12 @@ struct figure{
     double P;
     double x, y;
 };
-struct center{
-    double x0;
-    double y0;
-};
 void Square_Perimetr(figure *num, int count);
 void coordinates(figure *num, int count);
-void input(figure *num, int i);
+void input(figure *num, int cur, int i);
 void new_page();
 void newFigure(figure *&num, int cur, int &count);
-void deleteStruct(figure *&num, int &count);
+void deleteStruct(figure *num, int count);
 void maxSquare(figure *num, int count);
 void maxPerimetr(figure *num, int count);
 void information(figure *num, int count);
@@ -81,17 +76,11 @@ void Square_Perimetr(figure *num, int count){
 
 void coordinates(figure *num, int count)
 {
-    center Point = {0, 0};
     for(int i=0; i<count; i++){
-//    cout << "x = " << num->x << endl;
-//    cout << "y = " << num->y << endl;
-
-    double AO = sqrt(pow((Point.x0 - num[i].x), 2) + pow((Point.y0 - num[i].y), 2));
-    cout << "AO = " << AO << endl;
-
-    double R = num[i].lg/(2*sin(pi/num[i].n));
-    cout << "R = " << R << endl;
-
+        double AO = sqrt(pow(num[i].x, 2) + pow(num[i].y, 2));
+        cout << "AO = " << AO << endl;
+        double R = num[i].lg/(2*sin(pi/num[i].n));
+        cout << "R = " << R << endl;
     if(AO > R){
         double x_centre;
         double y_centre;
@@ -99,7 +88,6 @@ void coordinates(figure *num, int count)
         alpha = atan2(num[i].x, num[i].y);
         x_centre = num[i].x - R*cos(alpha);
         y_centre = num[i].y - R*sin(alpha);
-
         beta = (2*pi)/num[i].n;
         double *X = new double[num[i].n];
         double *Y = new double[num[i].n];
@@ -110,7 +98,7 @@ void coordinates(figure *num, int count)
             X[j] = x_centre + R*cos(alpha+beta*j);
             Y[j] = y_centre + R*sin(alpha+beta*j);
         }
-        //cout << num[i].n << endl;
+
         for (int j=0; j<num[i].n; j++){
             cout<< "point "<< j << ": " << X[j] <<" "<< Y[j] <<endl;
         }
@@ -120,8 +108,48 @@ void coordinates(figure *num, int count)
         else{
             cout << "AO < R error!" << endl;
         }
+//        double R;
+//      double dxR;
+//      double dyR;
+//      double xR;
+//      double yR;
+//      double k;
+//      double modx1=fabs(num[i].x);
+//      double mody1=fabs(num[i].y);
+//      int flagX=1;
+//      int flagY=1;
+//      if(num[i].x<0){flagX=-1;}
+//      if(num[i].y<0){flagY=-1;}
+//      R = num[i].lg/(2*sin(M_PI/num[i].n));
+//      if(((sqrt(pow(modx1,double(2))+(mody1,double(2))))-R)<0)
+//        {
+//            cout<<"Error coordinate\n";
+//            continue;
+//        }
+//      k=atan((mody1)/(modx1));
+//      dxR=R*cos(k);
+//      dyR=R*sin(k);
+//      xR=modx1-dxR;
+//      yR=mody1-dyR;
+//      double angle=2*M_PI/num[i].n;
+//      cout<<"Coordinates of polygon: "<<i+1<<"\n";
+//      cout<<"Vertex 1: "<<num[i].x<<";"<<num[i].y<<"\n";
+//      for(int j=1;j<num[i].n;++j)
+//      {
+//         if(flagX != flagY){
+//            double NewAngle=((atan(mody1/modx1))-(j)*angle);
+//            double Next_X=xR+R*cos(NewAngle);
+//            double Next_Y=yR+R*sin(NewAngle);
+//            cout<<"Vertex"<<1+j<<": " <<Next_X*flagX<<";"<<Next_Y*flagY<<"\n";
+//          }else{
+//            double NewAngle=atan(mody1/modx1)+(j)*angle;
+//            double Next_X=xR+R*cos(NewAngle);
+//            double Next_Y=yR+R*sin(NewAngle);
+//            cout<<"Vertex"<<1+j<<": " <<Next_X*flagX<<";"<<Next_Y*flagY<<"\n";
+//          }
+//
+//        }
     }
-
     cout << "coordinates done" << endl;
 }
 
@@ -210,7 +238,7 @@ void newFigure(figure *&num, int cur, int &count){
 }
 
 
-void deleteStruct(figure *&num, int &count){
+void deleteStruct(figure *num, int count){
     int key;
     cout << "enter number of figure to delete: ";
     cin >> key;
@@ -316,10 +344,46 @@ void information(figure *num, int count){
 }
 
 
+void sub_menu(figure *number, int count){
+        int return_sub=0;
+    while(return_sub==0){
+        int choice2;
+        cout << "choice action: " << endl;
+        cout << "1 - max Square" << endl;
+        cout << "2 - max Perimetr" << endl;
+        cout << "3 - return sub menu" << endl;
+        //cout << " - exit from submenu" << endl;
+        if(!(cin >> choice2)){
+            cout << "error!" << endl;
+            return;
+        }
+        switch(choice2){
+        case 1:
+            new_page();
+            Square_Perimetr(number, count);
+            maxSquare(number, count);
+            break;
+        case 2:
+            new_page();
+            Square_Perimetr(number, count);
+            maxPerimetr(number, count);
+            break;
+        case 3:
+            new_page();
+            return_sub++;
+            break;
+        default:
+            cout << "Error" << endl;
+           //break;
+        }
+    }
+}
+
+
 void menu(figure *number, int count){
-    char next;
+    int next=-1;
     int cur=0;
-    do{
+  do{
     int choice;
     cout << "choice action: " << endl;
     cout << "1 - new figure" << endl;
@@ -329,7 +393,7 @@ void menu(figure *number, int count){
     cout << "5 - exit from programm" << endl;
     if(!(cin >> choice)){
         cout << "error!" << endl;
-        break;
+        return;
     }
     switch(choice){
     case 1:
@@ -345,43 +409,31 @@ void menu(figure *number, int count){
     case 3:
         new_page();
         deleteStruct(number, count);
+        cur--;
         break;
     case 4:
         new_page();
-        int choice2;
-        cout << "choice action: " << endl;
-        cout << "1 - max Square" << endl;
-        cout << "2 - max Perimetr" << endl;
-        cout << " - exit from submenu" << endl;
-        if(!(cin >> choice2)){
+        sub_menu(number, count);
+        break;
+    case 5:
+        new_page();
+        cout << "do you want to exit from programm?(0 - no/1- yes)" << endl;
+        if(!(cin >> next)){
             cout << "error!" << endl;
-            break;
+            return;
         }
-        switch(choice2){
-        case 1:
+        if(next==1){
+            next++;
+            cout << "programm is completed" << endl;
+        }
+        if(next==0){
             new_page();
-            Square_Perimetr(number, count);
-            maxSquare(number, count);
-            break;
-        case 2:
-            new_page();
-            Square_Perimetr(number, count);
-            maxPerimetr(number, count);
-            break;
-        default:
-            cout << "Main menu:" << endl;
-            break;
+            menu(number, count);
         }
         break;
     default:
-        cout << "exit from programm" << endl;
-        break;
+        cout << "error" << endl;
+        
     }
-    cout << "do you want to continue?(y/n)" << endl;
-    if(!(cin >> next)){
-        cout << "error!" << endl;
-        exit (6);
-    }
-    }while(next=='y');
-        cout << "bye bye" << endl;
+  }while(next==-1);
 }
