@@ -1,6 +1,6 @@
 #include <iostream>
 #include <math.h>
-
+#define max_coord 100
 using namespace std;
 # define pi M_PI
 
@@ -11,7 +11,7 @@ struct figure{
     double lg;
     double S;
     double P;
-    double x, y;
+    double x[max_coord], y[max_coord];
 };
 void Square_Perimetr(figure *num, int count);
 void coordinates(figure *num, int count);
@@ -21,7 +21,7 @@ void newFigure(figure *&num, int cur, int &count);
 void deleteStruct(figure *num, int count);
 void maxSquare(figure *num, int count);
 void maxPerimetr(figure *num, int count);
-void information(figure *num, int count);
+void information(figure *num, int count, int cur);
 
 void menu(figure *number, int count);
 
@@ -74,10 +74,9 @@ void Square_Perimetr(figure *num, int count){
 }
 
 
-void coordinates(figure *num, int count)
-{
+void coordinates(figure *num, int count){
     for(int i=0; i<count; i++){
-        double AO = sqrt(pow(num[i].x, 2) + pow(num[i].y, 2));
+        double AO = sqrt(pow(num[i].x[0], 2) + pow(num[i].y[0], 2));
         cout << "AO = " << AO << endl;
         double R = num[i].lg/(2*sin(pi/num[i].n));
         cout << "R = " << R << endl;
@@ -85,93 +84,75 @@ void coordinates(figure *num, int count)
         double x_centre;
         double y_centre;
         double alpha, beta;
-        alpha = atan2(num[i].x, num[i].y);
-        x_centre = num[i].x - R*cos(alpha);
-        y_centre = num[i].y - R*sin(alpha);
+        alpha = atan2(num[i].x[0], num[i].y[0]);
+        x_centre = num[i].x[0] - R*cos(alpha);
+        y_centre = num[i].y[0] - R*sin(alpha);
         beta = (2*pi)/num[i].n;
-        double *X = new double[num[i].n];
-        double *Y = new double[num[i].n];
-        X[0]=num[i].x;
-        Y[0]=num[i].y;
-        for(int j = 1; j < num[i].n; j++)
-        {
-            X[j] = x_centre + R*cos(alpha+beta*j);
-            Y[j] = y_centre + R*sin(alpha+beta*j);
+//        double **X = new double*[count];
+//        double **Y = new double*[count];
+//            X[i]=new double[num[i].n];
+//            Y[i]=new double[num[i].n];
+//        X[i][0]=num[i].x;
+//        Y[i][0]=num[i].y;
+        for(int j = 0; j < num[i].n; j++){
+            num[i].x[j] = x_centre + R*cos(alpha+beta*j);
+            num[i].y[j] = y_centre + R*sin(alpha+beta*j);
         }
 
         for (int j=0; j<num[i].n; j++){
-            cout<< "point "<< j << ": " << X[j] <<" "<< Y[j] <<endl;
+            cout<< "point "<< j << ": " << num[i].x[j] <<", "<< num[i].y[j] <<";"<<endl;
         }
-        delete X;
-        delete Y;
+//        delete X[i];
+//        delete Y[i];
+//        delete X;
+//        delete Y;
     }
         else{
             cout << "AO < R error!" << endl;
         }
-//        double R;
-//      double dxR;
-//      double dyR;
-//      double xR;
-//      double yR;
-//      double k;
-//      double modx1=fabs(num[i].x);
-//      double mody1=fabs(num[i].y);
-//      int flagX=1;
-//      int flagY=1;
-//      if(num[i].x<0){flagX=-1;}
-//      if(num[i].y<0){flagY=-1;}
-//      R = num[i].lg/(2*sin(M_PI/num[i].n));
-//      if(((sqrt(pow(modx1,double(2))+(mody1,double(2))))-R)<0)
-//        {
-//            cout<<"Error coordinate\n";
-//            continue;
-//        }
-//      k=atan((mody1)/(modx1));
-//      dxR=R*cos(k);
-//      dyR=R*sin(k);
-//      xR=modx1-dxR;
-//      yR=mody1-dyR;
-//      double angle=2*M_PI/num[i].n;
-//      cout<<"Coordinates of polygon: "<<i+1<<"\n";
-//      cout<<"Vertex 1: "<<num[i].x<<";"<<num[i].y<<"\n";
-//      for(int j=1;j<num[i].n;++j)
-//      {
-//         if(flagX != flagY){
-//            double NewAngle=((atan(mody1/modx1))-(j)*angle);
-//            double Next_X=xR+R*cos(NewAngle);
-//            double Next_Y=yR+R*sin(NewAngle);
-//            cout<<"Vertex"<<1+j<<": " <<Next_X*flagX<<";"<<Next_Y*flagY<<"\n";
-//          }else{
-//            double NewAngle=atan(mody1/modx1)+(j)*angle;
-//            double Next_X=xR+R*cos(NewAngle);
-//            double Next_Y=yR+R*sin(NewAngle);
-//            cout<<"Vertex"<<1+j<<": " <<Next_X*flagX<<";"<<Next_Y*flagY<<"\n";
-//          }
-//
-//        }
     }
     cout << "coordinates done" << endl;
 }
 
 
 void input(figure *num, int cur, int count){
-    for(int i=0; i<count; i++){
+    for(int i=cur-1; i<cur; i++){
         cout<<"Polygon  "<<i+1<<endl;
-        cout << "enter count of points ";
+        cout << "enter count of points: ";
         if(!(cin >> num[i].n)){
             cout << "error!" << endl;
             return;
         }
-        cout << "enter length ";
+        do{
+            //cin>>num[i].n;
+            if(num[i].n<3){
+                cout<<"Amount of angles must be more than 2, Try again: ";
+                if(!(cin >> num[i].n)){
+                    cout << "error!" << endl;
+                    return;
+                }
+            }
+        }while(num[i].n<3);
+        cout << "enter length: ";
         if(!(cin >> num[i].lg)){
             cout << "error!" << endl;
             return;
         }
-        cout << "enter poligon's " << cur << " coordinates: ";
-        if(!(cin >> num[cur-1].x) || !(cin >> num[cur-1].y)){
+        do{
+            if(num[i].lg<=0){
+                cout<<"Error. Length must be more 0. Try again: "<<endl;
+                if(!(cin >> num[i].lg)){
+                    cout << "error!" << endl;
+                    return;
+                }
+            }
+        }while(num[i].lg<=0);
+        cout << "enter poligon's " << cur << " coordinates(x, y): ";
+        if(!(cin >> num[cur-1].x[0]) || !(cin >> num[cur-1].y[0])){
             cout << "error!" << endl;
             return;
         }
+        cout << "prrrrrr"<<endl;
     }
 }
 
@@ -197,16 +178,7 @@ void newFigure(figure *&num, int cur, int &count){
 //      cout<<"Enter lenght of side:";
 //      cin>>num[i].lg;
 //      cout<<"Count of angles:"<<endl;
-      do{
-        //cin>>num[i].n;
-        if(num[i].n<3){
-            cout<<"Amount of angles must be more than 2, Try again";
-            if(!(cin >> num[i].n)){
-                cout << "error!" << endl;
-                return;
-            }
-        }
-      }while(num[i].n<3);
+
       //input_coordinates(current,amount_polygons,p_polygon);
    }
 //    figure *temp = new figure[count+1];
@@ -234,7 +206,6 @@ void newFigure(figure *&num, int cur, int &count){
 //        }
 //    }
     cout << "done new figure " << endl;
-
 }
 
 
@@ -242,8 +213,7 @@ void deleteStruct(figure *num, int count){
     int key;
     cout << "enter number of figure to delete: ";
     cin >> key;
-    if (key < 1 || key > count)
-    {
+    if (key < 1 || key > count){
         cout << "No polygon with this number";
         return;
     }
@@ -331,15 +301,15 @@ void maxPerimetr(figure *num, int count){
 }
 
 
-void information(figure *num, int count){
+void information(figure *num, int count, int cur){
     for(int i = 0; i < count; i++){
-    cout << "figure: " << i <<endl;
-    cout << " count of points: " << num[i].n << endl;
-    Square_Perimetr(num, count);
-    cout << endl << "Square " << num[i].S << " Perimetr " << num[i].P << endl;
+        cout << "Figure: " << i <<endl;
+        cout << "Count of points: " << num[i].n << endl;
+        Square_Perimetr(num, count);
+        cout << endl << "Square: " << num[i].S << " Perimetr: " << num[i].P << endl;
     }
-    cout << " coordinates of points: " << endl;
-    coordinates(num, count);
+    cout << "Coordinates of points: " << endl;
+    coordinates(num, cur);
     cout << "DONE" << endl;
 }
 
@@ -404,7 +374,7 @@ void menu(figure *number, int count){
     case 2:
         new_page();
         Square_Perimetr(number, count);
-        information(number, count);
+        information(number, count, cur);
         break;
     case 3:
         new_page();
@@ -433,7 +403,7 @@ void menu(figure *number, int count){
         break;
     default:
         cout << "error" << endl;
-        
+
     }
   }while(next==-1);
 }
