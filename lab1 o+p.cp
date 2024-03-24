@@ -13,6 +13,11 @@ struct figure{
     double P;
     double x, y;
 };
+
+void ignoreLine(){
+    cin.clear();
+    cin.ignore();
+}
 void Square_Perimetr(figure *num, int count);
 void coordinates(figure *num, int count);
 void input(figure *num, int cur, int i);
@@ -25,10 +30,6 @@ void information(figure *num, int count, int cur);
 
 void menu(figure *number, int count);
 
-void ignoreLine(){
-    cin.clear();
-    cin.ignore();
-}
 
 int main()
 {
@@ -81,9 +82,11 @@ void Square_Perimetr(figure *num, int count){
 
 void coordinates(figure *num, int count){
     for(int i=0; i<count; i++){
+        double AO = sqrt(pow(num[i].x, 2) + pow(num[i].y, 2));
+        cout << "AO = " << AO << endl;
         double R = num[i].lg/(2*sin(pi/num[i].n));
         cout << "R = " << R << endl;
-   // if(AO > R){
+    if(AO > R){
         double alpha = atan2(num[i].x, num[i].y);
 
         double x_centre = num[i].x - R*cos(alpha);
@@ -105,10 +108,10 @@ void coordinates(figure *num, int count){
 
         delete[] X;
         delete[] Y;
-//    }
-//        else{
-//            cout << "AO < R error!" << endl;
-//        }
+    }
+        else{
+            cout << "AO < R error!" << endl;
+        }
     }
     cout << "coordinates done" << endl;
 }
@@ -118,51 +121,59 @@ void input(figure *num, int cur, int count){
     for(int i=cur-1; i<cur; i++){
         cout<<"Polygon  "<<i+1<<endl;
         cout << "enter count of points: ";
-        if(!(cin >> num[i].n)){
-            cout << "error!" << endl;
-            return;
+        cin >> num[i].n;
+        while (cin.fail()){
+            ignoreLine();
+            cout << "You entered symbol, please enter a number" << endl;
+            cin >> num[i].n;
         }
         do{
             //cin>>num[i].n;
             if(num[i].n<3){
                 cout<<"Amount of angles must be more than 2, Try again: ";
-                if(!(cin >> num[i].n)){
-                    cout << "error!" << endl;
-                    return;
+                cin >> num[i].n;
+                while (cin.fail()){
+                    ignoreLine();
+                    cout << "You entered symbol, please enter a number" << endl;
+                    cin >> num[i].n;
                 }
             }
         }while(num[i].n<3);
         cout << "enter length: ";
-        if(!(cin >> num[i].lg)){
-            cout << "error!" << endl;
-            return;
-        }
+        cin >> num[i].lg;
+                while (cin.fail()){
+                    ignoreLine();
+                    cout << "You entered symbol, please enter a number" << endl;
+                    cin >> num[i].lg;
+                }
         do{
             if(num[i].lg<=0){
                 cout<<"Error. Length must be more 0. Try again: "<<endl;
-                if(!(cin >> num[i].lg)){
-                    cout << "error!" << endl;
-                    return;
+                cin >> num[i].lg;
+                while (cin.fail()){
+                    ignoreLine();
+                    cout << "You entered symbol, please enter a number" << endl;
+                    cin >> num[i].lg;
                 }
             }
         }while(num[i].lg<=0);
-        int check=1;
-        do{
         cout << "enter poligon's " << cur << " coordinates(x, y): ";
-        if(!(cin >> num[cur-1].x) || !(cin >> num[cur-1].y)){
-            cout << "error!" << endl;
-            return;
+        cin >> num[cur-1].x;
+        while (cin.fail()){
+            ignoreLine();
+            cout << "You entered symbol, please enter a number" << endl;
+            cin >> num[cur-1].x;
         }
-        double AO = sqrt(pow(num[i].x, 2) + pow(num[i].y, 2));
-        cout << "AO = " << AO << endl;
-        double R = num[i].lg/(2*sin(pi/num[i].n));
-        cout << "R = " << R << endl;
-        if(R<AO){
-            check=0;
-        }else{
-            cout <<"!!!point is not the farthest!!!"<<endl;
+        cin >> num[cur-1].y;
+        while (cin.fail()){
+            ignoreLine();
+            cout << "You entered symbol, please enter a number" << endl;
+            cin >> num[cur-1].y;
         }
-    }while(check!=0);
+//        if(!(cin >> num[cur-1].x) || !(cin >> num[cur-1].y)){
+//            cout << "error!" << endl;
+//            return;
+//        }
         //cout << "prrrrrr"<<endl;
     }
 }
@@ -213,7 +224,7 @@ void newFigure(figure *&num, int cur, int &count){
 //            //temp[iStruct].S = Square(&temp[iStruct], iStruct);
 //            cout << "Perimetr " << iStruct+1 << " figure: " << temp[iStruct].P << endl;
 //            cout << "Square " << iStruct+1 << " figure: " << temp[iStruct].S << endl;
-//     t       coordinates(&temp[iStruct]);
+//            coordinates(&temp[iStruct]);
 //        }
 //    }
     cout << "done new figure " << endl;
@@ -221,7 +232,7 @@ void newFigure(figure *&num, int cur, int &count){
 
 
 void deleteStruct(figure *&num, int &count){
-    if(count==0){
+    if(count == 0){
         cout<<"No polygons\n";
         return;
     }
@@ -323,7 +334,7 @@ void information(figure *num, int count, int cur){
     }
     else{
         for(int i = 0; i < count; i++){
-            cout << "Figure: " << i+1 <<endl;
+            cout << "Figure: " << i <<endl;
             cout << "Count of points: " << num[i].n << endl;
             Square_Perimetr(num, count);
             cout << endl << "Square: " << num[i].S << " Perimetr: " << num[i].P << endl;
@@ -344,9 +355,11 @@ void sub_menu(figure *number, int count){
         cout << "2 - max Perimetr" << endl;
         cout << "3 - return sub menu" << endl;
         //cout << " - exit from submenu" << endl;
-        if(!(cin >> choice2)){
-            cout << "error!" << endl;
-            return;
+        cin >> choice2;
+        while (cin.fail()){
+            ignoreLine();
+            cout << "You entered symbol, please enter a number" << endl;
+            cin >> choice2;
         }
         switch(choice2){
         case 1:
@@ -382,14 +395,10 @@ void menu(figure *number, int count){
     cout << "3 - delete the figure" << endl;
     cout << "4 - max Square and Perimetr" << endl;
     cout << "5 - exit from programm" << endl;
-//    if(!(cin >> choice)){
-//        cout << "error!" << endl;
-//        return;
-//    }
     cin >> choice;
-    while (cin.fail()) {
+        while (cin.fail()){
             ignoreLine();
-            cout << "!!!please enter a number!!!" << endl;
+            cout << "You entered symbol, please enter a number" << endl;
             cin >> choice;
         }
     switch(choice){
@@ -415,9 +424,11 @@ void menu(figure *number, int count){
     case 5:
         new_page();
         cout << "do you want to exit from programm?(0 - no/1- yes)" << endl;
-        if(!(cin >> next)){
-            cout << "error!" << endl;
-            return;
+        cin >> next;
+        while (cin.fail()){
+            ignoreLine();
+            cout << "You entered symbol, please enter a number" << endl;
+            cin >> next;
         }
         if(next==1){
             next++;
