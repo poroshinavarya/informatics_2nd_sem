@@ -9,7 +9,7 @@ class Vehicle{
     double mileage;//пробег в км/всё время
     double Volume;//объём бака в л
     double t;//время в пути
-    char name[40];
+    string name;
     double Power;//мощность двигателя
 public:
     double speed;
@@ -32,14 +32,17 @@ public:
     void Fuelfunc(int countVehicles, Vehicle *pVehicles);
     void output(int countVehicles, Vehicle *pVehicles);
     void trackTime_refuelings(int routeLength, Vehicle *pVehicles, int countVehicles);
-    void Set_name(char nameCar[40]){
-        strcpy(name, nameCar);
+    void Set_name(string nameCar){
+      //  strcpy(name, nameCar);
+      name=nameCar;
+
     }
-    char get_name(){
-        for(int i=0;i<40;i++){
-            cout<<name[i];
-        }
-        return 0;
+
+    string get_name(){
+//        for(int i=0;i<40;i++){
+//            cout<<name[i];
+//        }
+        return name;
     }
     void set_WheelCnt(int Wheel){
         this->WheelCnt=Wheel;
@@ -85,7 +88,7 @@ void ignoreLine(){
 
 Vehicle::Vehicle(int countVehicles,Vehicle* pVehicles){
   for(int i=0; i < countVehicles; i++){
-    char name[40];
+    string name;
     int WheelCnt;
     double mileage;
     double Volume;
@@ -171,7 +174,7 @@ void Vehicle::output(int countVehicles, Vehicle *pVehicles){
 void Vehicle::trackTime_refuelings(int routeLength, Vehicle *pVehicles, int countVehicles){
     double time[countVehicles];
     int num_refuel[countVehicles];
-    char name_V[countVehicles][40];
+    string name_V[countVehicles];
     double refuelings[countVehicles];
     for(int i=0;i<countVehicles;i++){
         refuelings[i]=(((routeLength/100)*pVehicles[i].fuelCons)/pVehicles[i].Volume);
@@ -181,7 +184,8 @@ void Vehicle::trackTime_refuelings(int routeLength, Vehicle *pVehicles, int coun
         time[i]=routeLength/pVehicles[i].speed;
     }
     for(int i=0;i<countVehicles;++i){
-        strcpy(name_V[i], pVehicles[i].name);
+        //strcpy(name_V[i], pVehicles[i].name);
+        name_V[i]=pVehicles[i].name;
     }
     for(int i=0;i<countVehicles;i++){
         for(int j=0;j<countVehicles-1;++j){
@@ -192,10 +196,13 @@ void Vehicle::trackTime_refuelings(int routeLength, Vehicle *pVehicles, int coun
                 int temp_ref=num_refuel[j];
                 num_refuel[j]=num_refuel[j+1];
                 num_refuel[j+1]=temp_ref;
-                char temp_name[40];
-                strcpy(temp_name, name_V[j]);
-                strcpy(name_V[j], name_V[j+1]);
-                strcpy(name_V[j+1], temp_name);
+                string temp_name;
+//                strcpy(temp_name, name_V[j]);
+//                strcpy(name_V[j], name_V[j+1]);
+//                strcpy(name_V[j+1], temp_name);
+                temp_name=name_V[j];
+                name_V[j]=name_V[j+1];
+                name_V[j+1]=temp_name;
             }
         if(time[j]==time[j+1]){
           if(num_refuel[j]>num_refuel[j+1]){
@@ -205,10 +212,13 @@ void Vehicle::trackTime_refuelings(int routeLength, Vehicle *pVehicles, int coun
             int temp_ref=num_refuel[j];
             num_refuel[j]=num_refuel[j+1];
             num_refuel[j+1]=temp_ref;
-            char temp_name[30];
-            strcpy(temp_name,name_V[j]);
-            strcpy(name_V[j],name_V[j+1]);
-            strcpy(name_V[j+1],temp_name);
+            string temp_name;
+//            strcpy(temp_name,name_V[j]);
+//            strcpy(name_V[j],name_V[j+1]);
+//            strcpy(name_V[j+1],temp_name);
+            temp_name=name_V[j];
+                name_V[j]=name_V[j+1];
+                name_V[j+1]=temp_name;
           }
         }
       }
