@@ -2,7 +2,7 @@
 #include <math.h>
 
 using namespace std;
-# define pi M_PI
+#define pi M_PI
 
 struct figure{
     int n;
@@ -22,8 +22,7 @@ void input(figure *num, int cur, int i);
 void new_page();
 void newFigure(figure *&num, int cur, int &count);
 void deleteStruct(figure *&num, int &count);
-void maxSquare(figure *num, int count);
-void maxPerimetr(figure *num, int count);
+void max_P_S(int count, figure *num, int p);
 void information(figure *num, int count, int cur);
 
 void menu(figure *number, int count);
@@ -66,31 +65,36 @@ void Square_Perimetr(figure *num, int count){
 void coordinates(figure *num, int count){
     for(int i=0; i<count; i++){
 //        double AO = sqrt(pow(num[i].x, 2) + pow(num[i].y, 2));
-//        cout << "AO = " << AO << endl;
-        double R = num[i].lg/(2*sin(pi/num[i].n));
-//        cout << "R = " << R << endl;
-//    if(AO > R){
-        double alpha = atan2(num[i].x, num[i].y);
-
-        double x_centre = num[i].x - R*cos(alpha);
-        double y_centre = num[i].y - R*sin(alpha);
-
-            double *X=new double[num[i].n];
-            double *Y=new double[num[i].n];
-        X[0]=num[i].x;
-        Y[0]=num[i].y;
-        for(int j = 1; j < num[i].n; j++){
-            double beta = (2*pi*j)/num[i].n;
-            X[j] = x_centre + R*cos(alpha+beta);
-            Y[j] = y_centre + R*sin(alpha+beta);
+      double R,dxR,dyR,xR,yR,k;
+      double modx=fabs(num[i].x);
+      double mody=fabs(num[i].y);
+      int flagX=1;
+      int flagY=1;
+      if(num[i].x<0){flagX=-1;}
+      if(num[i].y<0){flagY=-1;}
+      R = num[i].lg/(2*sin(pi/num[i].n));
+      k=atan((mody)/(modx));
+      dxR=R*cos(k);
+      dyR=R*sin(k);
+      xR=modx-dxR;
+      yR=mody-dyR;
+      double angle=2*M_PI/num[i].n;
+      cout<<"Coordinates of polygon: "<<i+1<<"\n";
+      cout<<"point 1: "<<num[i].x<<"; "<<num[i].y<<"\n";
+      for(int j=1; j<num[i].n; ++j)
+      {
+         if(flagX != flagY){
+            double NewAngle=((atan(mody/modx))-(j)*angle);
+            double Next_X=xR+R*cos(NewAngle);
+            double Next_Y=yR+R*sin(NewAngle);
+            cout<<"point"<<j+1<<": " <<Next_X*flagX<<"; "<<Next_Y*flagY<<"\n";
+          }else{
+            double NewAngle=atan(mody/modx)+(j)*angle;
+            double Next_X=xR+R*cos(NewAngle);
+            double Next_Y=yR+R*sin(NewAngle);
+            cout<<"point"<<j+1<<": " <<Next_X*flagX<<"; "<<Next_Y*flagY<<"\n";
+          }
         }
-
-        for (int j=0; j<num[i].n; j++){
-            cout<< "point "<< j << ": " << X[j] <<", "<< Y[j] <<";"<<endl;
-        }
-
-        delete[] X;
-        delete[] Y;
     }
     cout << "coordinates done" << endl;
 }
@@ -136,34 +140,36 @@ void input(figure *num, int cur, int count){
                 }
             }
         }while(num[i].lg<=0);
-        int check=1;
 
-        double R = num[i].lg/(2*sin(pi/num[i].n));
+        int check=1;
+        double correct_y = 0;
+        double R = fabs(num[i].lg/(2*sin(pi/num[i].n)));
     do{
-        cout << "enter poligon's " << cur << " coordinates(x, y): ";
-        cin >> num[cur-1].x;
+        cout << "\nPoligon's " << cur << " coordinates: ";
+        cout << "\nenter x:\n";
+        cin >> num[i].x;
         while (cin.fail()){
             ignoreLine();
             cout << "You entered symbol, please enter a number" << endl;
-            cin >> num[cur-1].x;
+            cin >> num[i].x;
         }
-        cin >> num[cur-1].y;
+
+         cout <<"\nenter y:\n";
+        cin >> num[i].y;
         while (cin.fail()){
             ignoreLine();
             cout << "You entered symbol, please enter a number" << endl;
-            cin >> num[cur-1].y;
+            cin >> num[i].y;
         }
-        double AO = sqrt(pow(num[i].x, 2) + pow(num[i].y, 2));
-        if(R<AO){
+    if((sqrt(pow(num[i].x,double(2))+pow(num[i].y,double(2)))-R)<0){
+        cout<<"Error coordinate\n";
+         correct_y = sqrt(pow(R,double(2))-pow(num[i].x,double(2)));
+         cout<<"With this x, the y must modulo more than\n"<<correct_y<<"\n";
+        }
+        else{
             check=0;
-        }else{
-            cout <<"/nThe coordinates of the point that is not the most remote are entered, repeat the input!"<<endl;
         }
     }while(check!=0);
-//        if(!(cin >> num[cur-1].x) || !(cin >> num[cur-1].y)){
-//            cout << "error!" << endl;
-//            return;
-//        }
     }
 }
 
@@ -285,7 +291,7 @@ void information(figure *num, int count, int cur){
             cout << endl << "Square: " << num[i].S << " Perimetr: " << num[i].P << endl;
         }
         cout << "Coordinates of points: " << endl;
-        coordinates(num, cur);
+        coordinates(num, count);
     }
     cout << "INFORMATION DONE\n";
 }
