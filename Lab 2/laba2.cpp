@@ -7,11 +7,6 @@ using namespace std;
 int num = 0; //изначальный размер массива
 double Check_input(double var);
 int Check_input(int var);
-int menu(int &flag);
-void clean(int var = 1);
-void newCar(Vehicle *&pVehicles, int &num, Vehicle cars);
-Vehicle *Results(Vehicle *&pVehicles, int num);
-void outputResults(Vehicle *&pVehicles, int num);
 
 class Vehicle{
 private:
@@ -94,11 +89,11 @@ public:
   }
 };
 
-void clean(int var) {
-  for (int i = 0; i < 3; i = i + 1) {
-    cout << endl;
-  }
-}
+//int menu(int &flag);
+//void clean(int var = 1);
+//void newCar(Vehicle *&pVehicles, int &num, Vehicle cars);
+//Vehicle *Results(Vehicle *&pVehicles, int num);
+//void outputResults(Vehicle *&pVehicles, int num);
 
 int menu(int &cur) {
   cout << "\nChoose action:\n";
@@ -106,7 +101,7 @@ int menu(int &cur) {
   cout << "1 - to add new Vehicle\n";
   cout << "2 - output information about Vehicle\n";
   cout << "3 - to enter length of the track\n";
-  cout << "4 - route calculation\n"; //расчет прохождения трассы
+  cout << "4 - route calculation\n";
   if (cur == 1)
     cout << "5 - results of last race\n";
   int choice = 0;
@@ -117,85 +112,12 @@ int menu(int &cur) {
   return choice;
 }
 
-
-
-int main(){
-  clean();
-  Vehicle *pVehicles = nullptr;
-  double trackLength = 0;
-  int flag = 1;
-  int cur = 0;
-  while (flag == 1){
-    int choice = 10;
-    choice = menu(cur);
-    if ((choice > 5) || (choice < 0)){
-      cout << "\nerror, try another number!\n";
-    }
-    switch (choice){
-    case 0:
-      cout << "Are you sure you want to exit?\n1 - yes\n0 - no, go back\n";
-      int exit = 2;
-      exit = Check_input(exit);
-      if (exit == 1){
-        flag = 0;
-        break;
-      }
-      else{
-        clean();
-      }
-      break;
-      delete[] pVehicles;
-      break;
-    case 1:
-      clean();
-      string NameCar = "";
-      double vol = 0;
-      double power = 0;
-      int WheelCnt = 0;
-      Vehicle cars(NameCar, vol, power, WheelCnt);
-      clean();
-      newCar(pVehicles, num, cars);
-      cur = 0;
-      break;
-    case 2:
-      clean();
-      for (int i = 0; i < num; i++) {
-        cout << pVehicles[i].name << endl;
-        pVehicles[i].output();
-      }
-      break;
-    case 3:
-      clean();
-      cout << "Enter the length of the track (km): ";
-      trackLength = Check_input(trackLength);
-      cur = 0;
-      break;
-    case 4:
-      clean();
-      if (trackLength == 0) {
-        cout << "You haven't entered the length of the track!\n";
-        cur = 0;
-        break;
-      }
-      else{
-        for (int i = 0; i < num; i++){
-          pVehicles[i].Time = pVehicles[i].calculateRaceTime(trackLength);
-          pVehicles[i].mileage = trackLength;
-          pVehicles[i].Cnt_refueling = pVehicles[i].calc_Refuel(trackLength);
-        }
-      }
-      break;
-    case 5:
-      clean();
-      outputResults(*&pVehicles, num);
-      break;
-    default:
-      clean();
-      break;
-    }
+void clean(int var=1) {
+  for (int i = 0; i < 3; i = i + 1) {
+    cout << endl;
   }
-  return 0;
 }
+
 void newCar(Vehicle *&pVehicles, int &num, Vehicle cars) {
   Vehicle *temp;
   if (pVehicles != nullptr) {
@@ -231,6 +153,7 @@ Vehicle *Results(Vehicle *&pVehicles, int num){
   delete[] cur_copy;
   return results;
 }
+
 void outputResults(Vehicle *&pVehicles, int num) {
   Vehicle *results = Results(pVehicles, num);
   for (int i = 0; i < num; i++) {
@@ -252,6 +175,7 @@ double Check_input(double var) {
   }
   return var;
 }
+
 int Check_input(int var) {
   cin >> var;
   if (cin.fail() || var < 0) {
@@ -262,4 +186,88 @@ int Check_input(int var) {
     }
   }
   return var;
+}
+
+
+int main(){
+  clean();
+  Vehicle *pVehicles = nullptr;
+  double trackLength = 0;
+  int flag = 1;
+  int cur = 0;
+  while (flag == 1){
+    int choice = 10;
+    choice = menu(cur);
+    if ((choice > 5) || (choice < 0)){
+      cout << "\nerror, try another number!\n";
+    }
+    switch (choice){
+    case 0:{
+      cout << "Are you sure you want to exit?\n1 - yes\n0 - no, go back\n";
+      int exit = 2;
+      exit = Check_input(exit);
+      if (exit == 1){
+        flag = 0;
+        break;
+      }
+      else{
+        clean();
+      }
+      break;}
+      delete[] pVehicles;
+      break;
+    case 1:{
+      clean();
+      string NameCar = "";
+      double vol = 0;
+      double power = 0;
+      int WheelCnt = 0;
+      Vehicle cars(NameCar, vol, power, WheelCnt);
+      clean();
+      newCar(pVehicles, num, cars);
+      cur = 0;
+      break;
+    }
+    case 2:{
+      clean();
+      for (int i = 0; i < num; i++) {
+        cout << pVehicles[i].name << endl;
+        pVehicles[i].output();
+      }
+      break;
+    }
+    case 3:{
+      clean();
+      cout << "Enter the length of the track (km): ";
+      trackLength = Check_input(trackLength);
+      cur = 0;
+      break;
+    }
+    case 4:{
+      clean();
+      if (trackLength == 0) {
+        cout << "You haven't entered the length of the track!\n";
+        cur = 0;
+        break;
+      }
+      else{
+        for (int i = 0; i < num; i++){
+          pVehicles[i].Time = pVehicles[i].calculateRaceTime(trackLength);
+          pVehicles[i].mileage = trackLength;
+          pVehicles[i].Cnt_refueling = pVehicles[i].calc_Refuel(trackLength);
+        }
+            cout << "the calculation has beem made" << endl;
+      }
+      break;
+    }
+    case 5:{
+      clean();
+      outputResults(*&pVehicles, num);
+      break;}
+    default:
+      clean();
+      break;
+    }
+  }
+  return 0;
 }
