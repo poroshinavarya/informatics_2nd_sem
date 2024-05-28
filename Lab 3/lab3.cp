@@ -110,9 +110,6 @@ public:
     }
 };
 
-//int menu(int &flag);
-//void clean(int var = 1);
-//void newCar(Vehicle *&pVehicles, int &num, Vehicle cars);
 
 int menu(int &cur) {
   cout << "\nChoose action:\n";
