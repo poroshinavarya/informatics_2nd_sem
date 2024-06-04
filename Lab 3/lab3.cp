@@ -134,7 +134,7 @@ void clean(int var=1) {
   }
 }
 
-void newCar(Vehicle *&pVehicles, int &num, Vehicle cars){
+void newCar(Vehicle *&pVehicles, int &num, const Vehicle &cars){
   Vehicle *temp;
   if (pVehicles != nullptr) {
     temp = new Vehicle[num + 1];
@@ -211,7 +211,6 @@ int Wheel :: check_status(double mileage, double speed)
   }
   else
   {
-    //cout<<"Wheel is damaged"<<endl;
     return 1;
   }
 }
@@ -353,6 +352,10 @@ int main(){
     }
     case 3:{
       clean();
+      if(cur==0){
+            cout<<"Firstly input vehicle!\n";
+            break;
+          }
       cout << "Enter the length of the track (km): ";
       trackLength = Check_input(trackLength);
       cur = 0;
