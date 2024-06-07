@@ -5,12 +5,12 @@
 #include <ctime>
 using namespace std;
 
-int num = 0; //изначальный размер массива
+int num = 0;
 double Check_input(double var);
 int Check_input(int var);
 class Wheel{
     double cur_mileage;
-       int status;
+    int status;
 public:
     int check_status(double mileage, double speed);
     Wheel(){status=0;cur_mileage=0;};
@@ -25,21 +25,21 @@ public:
 class Engine{
 protected:
     double engIntake; //потребление двигателя l/km
-    double engPow; //мощность двигателя HP horsepower
+    double engPow; //мощность двигателя HP
 public:
- inline double calc_Intake() {return fabs(pow(engPow, 1 / 3) + sqrt(engPow) - 6.25);}
+ double calc_Intake(){return fabs(pow(engPow, 1 / 3) + sqrt(engPow) - 6.25);}
  Engine(){engIntake=0;engPow=0;};
  void def_engine(double power);
  virtual void output();
 };
 class Fuel_system{
-    protected:
-        double cur_fuel; //текущий обЪём топлива литры l;
+protected:
+    double cur_fuel; //текущий обЪём топлива литры l;
 public:
-  double TankVolume; //обЪём бака литры l
+  double TankVolume;
   void calc_cur_fuel(double engIntake,double mileage,double Cnt_refueling);//расчёт текущего обЪёма топлива
   Fuel_system(){TankVolume=0;cur_fuel=0;};
- void def_fuel_system(double volume, double engIntake, double mileage );
+ void def_fuel_system(double volume, double engIntake, double mileage);
  virtual void output();
 };
 class Vehicle: public Engine, public Fuel_system{
@@ -51,7 +51,7 @@ private:
   double Cnt_refueling;//количество заправок
   double Time;//время в пути
 public:
-      Wheel* ptr_wheel;
+    Wheel* ptr_wheel;
     string name;
 
   Vehicle(string NameCar, int wheels){
@@ -74,12 +74,12 @@ public:
   ~Vehicle(){
     cout << "Deletion of " << name << endl;
   }
-
+    void set_Time(double t){Time = t;}
   void set_name(string NameCar){name = NameCar;}
   void set_WheelCnt(int wheels){WheelCnt = wheels;}
   void set_mileage(double tracklength) { mileage=tracklength; }
   void output();
-  inline double calc_Time(double routelength) {
+  double calc_Time(double routelength) {
     return (routelength / speed);
   };
    void calc_speed();
@@ -103,8 +103,8 @@ public:
     << "Damaged wheels: " << obj.damaged_wheels << ";\n"
     << "Speed: " << obj.speed << " km/h;\n"
     << "Mileage: " << obj.mileage << " km;\n"
-    <<"fuel volume: "<<obj.TankVolume<<"l;\n"
-    <<"current fuel: "<<obj.cur_fuel<<"l\n"
+    <<"fuel volume: "<<obj.TankVolume<<" l;\n"
+    <<"current fuel: "<<obj.cur_fuel<<" l;\n"
     <<"engine power: "<<obj.engPow<<" HP;\n"
     <<"engine intake: "<<obj.engIntake<<" l/100km;\n"<<endl;
     }
@@ -141,7 +141,7 @@ void newCar(Vehicle *&pVehicles, int &num, const Vehicle &cars){
     for (int i = 0; i < num; i++) {
       temp[i] = pVehicles[i];
     }
-    delete[] pVehicles;
+   // delete[] pVehicles;
   }
   else{
     temp = new Vehicle[1];
@@ -159,14 +159,14 @@ Vehicle *Results(Vehicle *&pVehicles, int num){
   }
   for (int i = 0; i < num; i++) {
     for (int j = 0; j < num; j++) {
-      if ((results[i].get_Time() - results[j].get_Time() < 0)&&(results[i].get_Cnt_refueling() - results[i].get_Cnt_refueling() <= 0)) {
+      if ((results[i].get_Time() - results[j].get_Time() < 0)&&(results[i].get_Cnt_refueling() - results[j].get_Cnt_refueling()<=0)){
         cur_copy[0] = results[i];
         results[i] = results[j];
         results[j] = cur_copy[0];
       }
     }
   }
-  delete[] cur_copy;
+  //delete[] cur_copy;
   return results;
 }
 
@@ -203,43 +203,21 @@ int Check_input(int var) {
   }
   return var;
 }
-int Wheel :: check_status(double mileage, double speed)
-{
-  int ratio = (1/(mileage*sqrt(speed)));
-  if(ratio>=0.5){
+int Wheel :: check_status(double mileage, double speed){
+  int rat = (1/(mileage*sqrt(speed)));
+  if(rat>=0.5){
     return 0;
   }
-  else
-  {
+  else{
     return 1;
   }
 }
 
-void Wheel ::output() {
-  if (status == 1) {
-    cout << "damaged" << endl;
-  } else {
-    cout << "not damaged" << endl;
-  }
-}
-void Engine ::output() {
-  cout << "engine power: " << engPow << " HP;" << endl;
-  cout << "engine intake: " << engIntake << " l/100km;" << endl;
-}
-
-void Engine::def_engine(double power) {
+void Engine::def_engine(double power){
   cout << "engine power (HP): ";
   power = Check_input(power);
   engPow = power;
   engIntake = calc_Intake();
-}
-
-void Fuel_system ::calc_cur_fuel(double engIntake, double mileage,double Cnt_refueling) { //расчёт текущего обЪёма топлива
-  if (Cnt_refueling == 0) {
-    cur_fuel=double(TankVolume - ((engIntake / 100) * mileage));
-  } else {
-    cur_fuel=(((Cnt_refueling)*TankVolume) - ((engIntake / 100) * mileage));
-  }
 }
 
 void Fuel_system ::def_fuel_system(double volume, double engIntake,double mileage) {
@@ -248,9 +226,23 @@ void Fuel_system ::def_fuel_system(double volume, double engIntake,double mileag
   TankVolume = volume;
   cur_fuel = volume;
 }
+
+void Wheel ::output(){
+  if (status == 1) {
+    cout << "damaged" << endl;
+  } else {
+    cout << "not damaged" << endl;
+  }
+}
+
 void Fuel_system ::output() {
-  cout << "fuel volume: " << TankVolume << "l" << endl;
-  cout << "current fuel: " << cur_fuel << "l" << endl;
+  cout << "fuel volume: " << TankVolume << " l;" << endl;
+  cout << "current fuel: " << cur_fuel << " l;" << endl;
+}
+
+void Engine ::output(){
+  cout << "engine power: " << engPow << " HP;" << endl;
+  cout << "engine intake: " << engIntake << " l/100km;" << endl;
 }
 
 void Vehicle::output() {
@@ -263,12 +255,22 @@ void Vehicle::output() {
 }
 
 void Vehicle ::time_show(){
+
   double t = this->Time;
+ //  cout<<"t= "<<t<<endl;
   int hours = int(t);
   double cur_time = (t - hours) * 60;
   int minutes = int(cur_time);
   int seconds = int((cur_time - minutes) * 60);
   cout << "TIME: " << hours << ":" << minutes << ":" << seconds << endl;
+}
+
+void Fuel_system ::calc_cur_fuel(double engIntake, double mileage,double Cnt_refueling) { //расчёт текущего обЪёма топлива
+  if (Cnt_refueling == 0) {
+    cur_fuel=double(TankVolume - ((engIntake / 100) * mileage));
+  } else {
+    cur_fuel=(((Cnt_refueling)*TankVolume) - ((engIntake / 100) * mileage));
+  }
 }
 
 void Vehicle ::calc_speed(){
@@ -279,7 +281,6 @@ speed= double(fabs(sqrt(engPow) * (70.0 / double(WheelCnt) - 2.5) * (cur_fuel / 
         speed = (fabs(sqrt(engPow) * (70.0 / double(WheelCnt) - 2.5) * (cur_fuel / 100.0))/(pow(2., double(damaged_wheels))));
     }
   }
-
 
 void Vehicle ::number_of_damaged_wheels(){
   int count = 0;
@@ -317,11 +318,11 @@ int main(){
         clean();
       }
       break;}
-      delete[] pVehicles;
+       delete[] pVehicles;
       for (int i = 0; i < num; i++) {
           delete[] pVehicles[i].ptr_wheel;
       }
-      break;
+        break;
     case 1:{
       clean();
       string NameCar = "";
@@ -337,22 +338,26 @@ int main(){
       Vehicle cars(NameCar, WheelCnt);
       clean();
       newCar(pVehicles, num, cars);
-      cur = 0;
+      cur =0;
       break;
     }
     case 2:{
       clean();
+      if(num==0){
+        cout<<"Firstly input vehicle!\n";
+        break;
+      }
       for (int i = 0; i < num; i++) {
         cout << pVehicles[i].name << endl;
         pVehicles[i].output();
-        cout<<"__OR__"<<endl;
+        cout<<"  OR"<<endl;
         cout<<pVehicles[i];
       }
       break;
     }
     case 3:{
       clean();
-      if(cur==0){
+      if(num==0){
             cout<<"Firstly input vehicle!\n";
             break;
           }
@@ -371,6 +376,9 @@ int main(){
       else{
         for (int i = 0; i < num; i++){
           pVehicles[i].calc_Time(trackLength);
+       //   cout<<"\nTime calc= "<<pVehicles[i].calc_Time(trackLength)<<endl;
+          pVehicles[i].set_Time(pVehicles[i].calc_Time(trackLength));
+
           pVehicles[i].set_mileage(trackLength);
           for (int j = 0; j < pVehicles[i].get_WheelCnt(); j++){
               pVehicles[i].ptr_wheel[j].def_wheel(trackLength, pVehicles[i].get_speed());
@@ -386,6 +394,11 @@ int main(){
     }
     case 5:{
       clean();
+      if (cur != 1) {
+        cout << "Firstly route calculation!\n";
+        cur = 0;
+        break;
+      }
       outputResults(pVehicles, num);
       break;}
     default:
