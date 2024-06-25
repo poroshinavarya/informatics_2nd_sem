@@ -56,8 +56,8 @@ public:
 
   Vehicle(string NameCar, int wheels){
     mileage = damaged_wheels =0;
-    set_name(NameCar);
-    set_WheelCnt(wheels);
+    name=NameCar;
+    WheelCnt=wheels;
     ptr_wheel= new Wheel[wheels];
     for (int i = 0; i < wheels; i++) {
         ptr_wheel[i] = Wheel();
@@ -74,7 +74,7 @@ public:
   ~Vehicle(){
     cout << "Deletion of " << name << endl;
   }
-    void set_Time(double t){Time = t;}
+  void set_Time(double t){Time = t;}
   void set_name(string NameCar){name = NameCar;}
   void set_WheelCnt(int wheels){WheelCnt = wheels;}
   void set_mileage(double tracklength) { mileage=tracklength; }
