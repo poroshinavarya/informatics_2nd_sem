@@ -373,7 +373,7 @@ void Vehicle :: need_refuel(double tracklength){
         this->Cnt_refueling_plus();
         pitStopTime+=this->refuel_time();
         cur_fuel = TankVolume;
-        cout<<"\npit\n";
+        cout << "Car " << get_name() << " pulls into a pit stop" << endl;
     }
 }
 
@@ -383,7 +383,7 @@ void Vehicle :: need_change(){
         for(int i=0;i<vecWheels.size();i++){
             if (vecWheels[i].get_status()==1){
                 vecWheels[i].def_wheel(0.,0.);
-                cout<<"\npit\n";
+                cout << "Car " << get_name() << " pulls into a pit stop" << endl;
             }
         }
     }
@@ -568,6 +568,7 @@ int main(){
                             }
                         }
                         else{
+                            cout << "\ncar " << cars[i].get_name() << " in pit-stop" << endl;
                             continue;
                         }
                     }
