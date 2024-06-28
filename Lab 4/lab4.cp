@@ -12,7 +12,8 @@ using namespace std;
 int num = 0;
 double RefuelTime=0.0003;// 1 секунда
 double ChangeTime=0.008;// 30 секунд
-double dt =0.0003;
+double dt = 0.0003;
+
 double Check_input(double var);
 int Check_input(int var);
 
@@ -40,23 +41,22 @@ public:
 class Engine{
 protected:
     double engIntake; //потребление двигателя l/km
-    double engPow; //мощность двигателя HP
+    double engPow; //мощность двигателя
 public:
     double calc_Intake(){return fabs(pow(engPow, 1 / 3) + sqrt(engPow) - 6.25);}
     Engine(){engIntake=0;engPow=0;};
     void def_engine(double power);
-    //virtual void output();
 };
 
 class Fuel_system{
 protected:
     double cur_fuel;
 public:
+    bool is_stopped;
     double TankVolume;
-    void calc_cur_fuel(double engIntake,double mileage);//расчёт текущего обЪёма топлива
+    void calc_cur_fuel(double engIntake,double mileage);
     Fuel_system(){TankVolume=0;cur_fuel=0;};
     void def_fuel_system();
-    //virtual void output();
 };
 
 class Vehicle: public Engine, public Fuel_system{
@@ -70,10 +70,19 @@ private:
     double Time;//время в пути
     double cur_mileage;
     int cur_circle;
+    bool inPitStop;
+
 public:
+    void setInPitStop(bool value) {
+        inPitStop = value;
+    }
+
+    bool isInPitStop() const {
+        return inPitStop;
+    }
     vector<Wheel> vecWheels;
     double pitStopTime=0;
-    int stat_of_car;
+
 
     Vehicle(string NameCar, int wheels){
         cur_mileage = mileage = pitStopTime = damaged_wheels = cur_circle=0;
@@ -88,6 +97,7 @@ public:
         calc_speed();
     }
     Vehicle(){
+        inPitStop=false;
         name="Vehicle is added";
         Time=mileage=Cnt_refueling=damaged_wheels=0;
         cur_circle=cur_mileage=pitStopTime=0;
@@ -107,7 +117,6 @@ public:
         if(cur_mileage-trackLength>=0){
             cur_circle=int(mileage/trackLength);
             cur_mileage=0;
-            cout<<"\npit\n";
             return 1;
         }
         else {return 0;}
@@ -149,7 +158,7 @@ public:
     void need_change();
     void time_show();
     double calc_refuel(double raceLength, int circles){
-        double Refuel = (raceLength * (engIntake / 100)) / TankVolume;
+        double Refuel = ((long)raceLength * ((long)engIntake / 100)) / TankVolume;
         if (Refuel > 1)
             this->Cnt_refueling= ceil(Refuel);
         else
@@ -210,7 +219,6 @@ public:
             cerr << "Exception caught: " << out <<endl;
             obj.engPow=Check_input(obj.engPow);
         }
-            obj.stat_of_car=0;
             obj.cur_fuel=obj.TankVolume;
             obj.def_engine(obj.engPow);
             obj.calc_speed();
@@ -320,7 +328,7 @@ void Engine::def_engine(double power){
     engIntake = calc_Intake();
 }
 
-void Fuel_system ::def_fuel_system() {
+void Fuel_system :: def_fuel_system() {
     cout << "fuel volume: ";
     double volume = 0.;
     volume = Check_input(volume);
@@ -330,28 +338,31 @@ void Fuel_system ::def_fuel_system() {
 
 void Wheel ::output(){
     if (status == 1) {
-        cout << "damaged" << endl;
+        cout << "broken" << endl;
     } else {
-        cout << "not damaged" << endl;
+        cout << "not broken" << endl;
     }
 }
 
 void Vehicle ::time_show(){
     double t = this->Time;
-    int hours = int(t);
+    int hours = static_cast<long long>(t);
     double cur_time = (t - hours) * 60;
-    int minutes = int(cur_time);
-    int seconds = int((cur_time - minutes) * 60);
+    int minutes = static_cast<long long>(cur_time);
+    int seconds = static_cast<long long>((cur_time - minutes) * 60);
     cout << "TIME: " << setw(4)<<setfill('0')<<hours << ":" << setw(2)<<setfill('0')<<minutes << ":" << setw(2)<<setfill('0')<<seconds << endl;
 }
 
-void Fuel_system ::calc_cur_fuel(double engIntake, double mileage){//расчёт текущего обЪёма топлива
-    cur_fuel = double(TankVolume - ((engIntake / 100) * mileage));
+void Fuel_system ::calc_cur_fuel(double engIntake, double mileage){
+    cur_fuel = static_cast<long long>(TankVolume - ((engIntake / 100) * mileage));
+    if (is_stopped) {
+        return; // машина заправляется
+    }
 }
 
 void Vehicle ::calc_speed(){
     if (damaged_wheels == 0){
-        speed= double(fabs(sqrt(engPow) * (70.0 / double(WheelCnt) - 2.5) /sqrt(cur_fuel)));
+        speed= double(fabs(sqrt(engPow) * (long)(70.0 / double(WheelCnt) - 2.5) /sqrt(cur_fuel)));
     }
     else{
         speed = (fabs(sqrt(engPow) * (70.0 / double(WheelCnt) - 2.5)  / sqrt(cur_fuel))*(pow(0.75, double(damaged_wheels))));
@@ -371,19 +382,21 @@ void Vehicle :: number_of_damaged_wheels(){
 void Vehicle :: need_refuel(double tracklength){
     if (cur_fuel < (engIntake*100) * tracklength){
         this->Cnt_refueling_plus();
-        pitStopTime+=this->refuel_time();
+        //pitStopTime+=this->refuel_time();
         cur_fuel = TankVolume;
-        cout << "Car " << get_name() << " pulls into a pit stop" << endl;
+        setInPitStop(true);
+        is_stopped = true;
     }
 }
 
 void Vehicle :: need_change(){
     if (damaged_wheels!=0){
-        pitStopTime+=this->change_wheels();
+       // pitStopTime+=this->change_wheels();
         for(int i=0;i<vecWheels.size();i++){
             if (vecWheels[i].get_status()==1){
                 vecWheels[i].def_wheel(0.,0.);
-                cout << "Car " << get_name() << " pulls into a pit stop" << endl;
+                setInPitStop(true);
+                is_stopped = true;
             }
         }
     }
@@ -399,6 +412,7 @@ void Vehicle :: reset(){
     Time=0;
     cur_fuel=TankVolume;
     calc_speed();
+  //  cout<<get_speed()<<endl;
     for (int j = 0; j < vecWheels.size(); j++){
         vecWheels[j].def_wheel(mileage, get_speed());
     }
@@ -422,7 +436,6 @@ int allfinished(vector<Vehicle> &pVehicles,double trackLength,int circles){
 int main(){
     clean();
     srand(time(NULL));
-//    vector<Vehicle> race_rezult;
     vector<Vehicle> cars;
     int NumCircles;
     double trackLength = 0;
@@ -527,7 +540,7 @@ int main(){
                     for (int i = 0; i <cars.size(); i++){
                         int exit=0;
                         if (find(skip_id.begin(), skip_id.end(), i) == skip_id.end()){
-//                        if (cars[i].stat_of_car==0){
+
                             cars[i].mileage_plus();
                             cars[i].cur_mileage_plus();
                             for (int j = 0; j < cars[i].vecWheels.size(); j++){
@@ -554,44 +567,59 @@ int main(){
                                 cars[i].set_Time(cur_time);
                                 cars[i].set_cur_circle(NumCircles);
                                 cars[i].time_show();
-                                cout<<""<<cars[i].get_name()<<" just finished"<<endl;
+                                cout<<cars[i].get_name()<<" just finished"<<endl;
                             }
                             if (exit==1){
                                 skip_id.push_back(i);
-//                                cars[i].stat_of_car=1;
                                 racing_cars=racing_cars-1;
                                 break;
                             }
                             if (cars[i].calc_circle(trackLength)){
-                                cars[i].need_refuel(trackLength);
-                                cars[i].need_change();
+                                    cars[i].need_refuel(trackLength);
+                                    cars[i].need_change();
+                                     if (cars[i].isInPitStop()){
+
+                                        cars[i].totalTime();
+                                        cars[i].pitStopTime += dt;
+                                     for(int i=0; i<cars[i].pitStopTime; i++){
+                                             cout << "\nCar " << i+1 << " is in the pit stop." << endl;
+                                          }
+                                         cars[i].is_stopped = true;
+                                         cars[i].setInPitStop(false);
+                                    }
+                                    else{
+                                        cars[i].pitStopTime=0;
+                                        cars[i].is_stopped = false;
+                                    }
                             }
+//                            if (cars[i].calc_circle(trackLength)){
+//                                cars[i].need_refuel(trackLength);
+//                                cars[i].need_change();
                         }
                         else{
-                            cout << "\ncar " << cars[i].get_name() << " in pit-stop" << endl;
                             continue;
                         }
                     }
                     cur_time+=dt;
                 }
-                for(int i=0;i<cars.size();i++){
-                    cars[i].totalTime();
-                }
+//              for(int i=0; i<cars.size(); i++){
+//                  cars[i].totalTime();
+//              }
             }
             break;
         }
         case 5:{
-          clean();
-          if (cur != 1) {
-            cout << "Firstly route calculation!\n";
-            cur = 0;
-            break;
-          }
-          outputResults(cars);
-          break;}
+            clean();
+            if (cur != 1) {
+                cout << "Firstly route calculation!\n";
+                cur = 0;
+                break;
+            }
+            outputResults(cars);
+            break;}
         default:
-          clean();
-          break;
+            clean();
+            break;
         }
     }
     return 0;
